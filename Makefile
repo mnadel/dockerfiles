@@ -1,7 +1,10 @@
 build:
 	docker build -t mnadel/gnu:latest .
 
-push: build
+login:
+	cred .docker.hub | docker login --password-stdin --username=mnadel
+
+push: login build
 	docker push mnadel/gnu:latest
 
 run: build
