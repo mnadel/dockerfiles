@@ -1,11 +1,9 @@
 FROM debian:trixie-slim
 
-# install deps
-RUN apt-get update && apt-get install -y \
-    curl \
-    wget
-
 # install github apt repo
+#
+RUN apt-get update && apt-get install -y wget
+
 RUN mkdir -p -m 755 /etc/apt/keyrings \
 	&& out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
 	&& cat $out | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
@@ -14,21 +12,25 @@ RUN mkdir -p -m 755 /etc/apt/keyrings \
 	&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
         | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
 
-# install packages
+# install useful packages
+#
 RUN apt-get update && apt-get install -y \
+    curl \
     ripgrep \
     neovim \
     fd-find \
     fzf
 
 # install github cli
+#
 RUN apt update && apt install -y gh
 
 # create users
+#
 RUN groupadd nerds
 RUN useradd -g nerds -ms /bin/bash claude
 RUN useradd -g nerds -ms /bin/bash nerd \
-    && usermod -aG sudo nerd
+    && usermod -aG sudo nerd # grant nerd sudo access
 
 # install claude
 #
@@ -39,6 +41,7 @@ RUN curl -fsSL https://claude.ai/install.sh | bash
 RUN chmod g+rwx /home/claude
 
 # become runtime user
+#
 USER nerd
 WORKDIR /home/nerd
 
