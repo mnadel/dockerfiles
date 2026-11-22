@@ -1,0 +1,21 @@
+FROM node:26-alpine
+
+RUN apk add --no-cache \
+        git \
+        ripgrep \
+        curl \
+        ca-certificates \
+        openssh-client \
+    && rm -rf /var/lib/apt/lists/* \
+        /var/cache/apk/* \
+        /usr/share/man \
+        /tmp/*
+
+RUN npm install -g @anthropic-ai/claude-code
+
+USER node
+WORKDIR /workspace
+
+ENV CLAUDE_CONFIG_DIR=/home/node/.claude
+
+CMD ["claude"]
